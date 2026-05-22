@@ -7,57 +7,10 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 3.7s
+ ✓ Ready in 4.1s
  ○ Compiling /api/sse ...
  ✓ Compiled /api/sse in 2.2s (288 modules)
- ✓ Compiled /api/tickets in 318ms (331 modules)
- GET /api/tickets 200 in 751ms
- ○ Compiling /middleware ...
- ✓ Compiled /middleware in 588ms (199 modules)
+ ✓ Compiled /api/tickets in 362ms (331 modules)
+ GET /api/tickets 200 in 1155ms
+ ✓ Compiled /middleware in 401ms (199 modules)
  ○ Compiling /login ...
- ✓ Compiled /login in 3.7s (844 modules)
- GET /login 200 in 4026ms
- GET /api/tickets 200 in 462ms
- ✓ Compiled /api/auth/[...nextauth] in 206ms (586 modules)
- GET /api/auth/csrf 200 in 1017ms
- POST /api/auth/callback/credentials 302 in 858ms
- GET /api/auth/csrf 200 in 24ms
- POST /api/auth/callback/credentials 302 in 532ms
- POST /api/tickets 201 in 119ms
- ✓ Compiled /api/tickets/[id]/respond in 206ms (588 modules)
- POST /api/tickets/2a023bd3-fa2e-4077-8c57-9decef8913a1/respond 201 in 1311ms
- ✓ Compiled /api/tickets/[id]/status in 263ms (590 modules)
- PATCH /api/tickets/2a023bd3-fa2e-4077-8c57-9decef8913a1/status 200 in 990ms
- POST /api/tickets/2a023bd3-fa2e-4077-8c57-9decef8913a1/respond 201 in 271ms
- ✓ Compiled /api/tickets/[id] in 258ms (592 modules)
- GET /api/tickets/2a023bd3-fa2e-4077-8c57-9decef8913a1 200 in 1118ms
- PATCH /api/tickets/2a023bd3-fa2e-4077-8c57-9decef8913a1/status 200 in 115ms
- POST /api/tickets/2a023bd3-fa2e-4077-8c57-9decef8913a1/respond 403 in 111ms
- ○ Compiling /tickets ...
- ✓ Compiled /tickets in 1279ms (941 modules)
- GET /tickets?ticket=2a023bd3-fa2e-4077-8c57-9decef8913a1 200 in 1822ms
- GET /api/tickets 200 in 294ms
- GET /api/tickets 200 in 337ms
- GET /api/tickets 200 in 274ms
- GET /api/tickets 200 in 292ms
- GET /api/tickets 200 in 283ms
- GET /api/tickets 200 in 266ms
- GET /api/tickets 200 in 558ms
- ✓ Compiled in 1148ms (630 modules)
- GET /api/tickets 200 in 875ms
- GET /api/tickets 200 in 651ms
- ✓ Compiled in 706ms (815 modules)
- GET /api/tickets 200 in 866ms
- GET /api/tickets 200 in 640ms
- GET /api/tickets 200 in 644ms
- GET /api/tickets 200 in 627ms
- GET /api/tickets 200 in 522ms
- GET /api/tickets 200 in 601ms
- GET /api/tickets 200 in 613ms
- GET /api/tickets 200 in 599ms
- GET /api/tickets 200 in 319ms
- GET /api/tickets 200 in 271ms
- GET /api/tickets 200 in 281ms
- GET /api/tickets 200 in 281ms
- GET /api/tickets 200 in 258ms
- GET /api/tickets 200 in 253ms

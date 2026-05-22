@@ -34,6 +34,9 @@ export async function POST(request: NextRequest, { params }: Params) {
     if (session.user.role === "author" && ticket.status === "closed") {
       return forbidden("This ticket is closed. Please submit a new query if you need more help.");
     }
+    if (session.user.role === "admin" && ticket.status === "closed" && !isInternalNote) {
+      return forbidden("This ticket is closed. Reopen it before sending a public response.");
+    }
 
     const [responseRow] = await db
       .insert(ticketResponses)

@@ -49,6 +49,7 @@ export function TicketDetail({ initialTicket, userId }: { initialTicket: Detail;
   const [updatingField, setUpdatingField] = useState<string | null>(null);
   const [sendingResponse, setSendingResponse] = useState(false);
   const [message, setMessage] = useState("");
+  const isClosed = ticket.status === "closed";
 
   async function refresh() {
     const data = (await fetch(`/api/tickets/${ticket.id}`, { cache: "no-store" }).then((res) => res.json())) as { ticket: Detail };
@@ -204,9 +205,10 @@ export function TicketDetail({ initialTicket, userId }: { initialTicket: Detail;
             <div className="mt-4 space-y-3">
               <Textarea value={draft} onChange={(event) => setDraft(event.target.value)} />
               <div className="flex gap-2">
-                <Button onClick={() => send(draft, false)} disabled={sendingResponse}>{sendingResponse ? "Sending..." : "Send as Response"}</Button>
+                <Button onClick={() => send(draft, false)} disabled={sendingResponse || isClosed}>{sendingResponse ? "Sending..." : "Send as Response"}</Button>
                 <Button variant="secondary" onClick={() => setDraft("")}>Discard</Button>
               </div>
+              {isClosed ? <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Reopen this ticket before sending a public response.</p> : null}
             </div>
           ) : null}
         </Card>
@@ -218,7 +220,8 @@ export function TicketDetail({ initialTicket, userId }: { initialTicket: Detail;
             <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
               <input type="checkbox" checked={internal} onChange={(event) => setInternal(event.target.checked)} /> Internal Note
             </label>
-            <Button onClick={() => send(manual, internal)} disabled={sendingResponse}>{sendingResponse ? "Sending..." : "Send Response"}</Button>
+            {isClosed && !internal ? <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Closed tickets only accept internal notes. Reopen to send an author-visible response.</p> : null}
+            <Button onClick={() => send(manual, internal)} disabled={sendingResponse || (isClosed && !internal)}>{sendingResponse ? "Sending..." : internal ? "Save Internal Note" : "Send Response"}</Button>
           </div>
         </Card>
       </div>
