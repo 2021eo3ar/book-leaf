@@ -1,0 +1,31 @@
+
+> bookleaf-portal@0.1.0 dev
+> next dev -p 3001
+
+  ▲ Next.js 14.2.35
+  - Local:        http://localhost:3001
+  - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 3.5s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 743ms (199 modules)
+ ○ Compiling /login ...
+ ✓ Compiled /login in 4.5s (523 modules)
+ GET /login 200 in 4786ms
+ GET /login 200 in 60ms
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 1121ms (528 modules)
+ GET /api/auth/csrf 200 in 2088ms
+ POST /api/auth/callback/credentials 302 in 4352ms
+ GET /api/auth/csrf 200 in 23ms
+ POST /api/auth/callback/credentials 302 in 572ms
+ ✓ Compiled /api/ai/classify in 479ms (571 modules)
+ POST /api/ai/classify 200 in 654ms
+ ✓ Compiled /api/tickets in 169ms (574 modules)
+ POST /api/tickets 201 in 365ms
+ ✓ Compiled /api/tickets/[id] in 282ms (576 modules)
+ GET /api/tickets/8fec347e-aa94-4904-b584-81b51c6b120b 200 in 1292ms
+ ✓ Compiled /api/ai/draft in 200ms (578 modules)
+ POST /api/ai/draft 200 in 606ms
+[?25h
