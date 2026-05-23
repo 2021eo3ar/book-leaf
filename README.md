@@ -10,7 +10,7 @@ BookLeaf Portal is a full-stack Next.js app for author support. Authors can view
 - Drizzle ORM: typed schema and queries with lightweight migrations.
 - NextAuth v5: credentials auth with JWT sessions.
 - Groq: `llama-3.3-70b-versatile` for classification and response drafting.
-- SSE: simple real-time updates without WebSocket infrastructure.
+- SSE: real-time ticket updates without WebSocket infrastructure, with client-side polling fallback.
 
 ## Getting Started
 1. Install dependencies: `npm install`
@@ -41,7 +41,9 @@ The Drizzle schema lives in `lib/db/schema.ts`. Use `npm run db:generate` for mi
 All 10 author accounts use `author123`.
 
 ## Architecture Decisions
-The App Router keeps portal pages and API handlers in one Next.js deployment. Drizzle + Neon gives type-safe Postgres access without a persistent server. SSE was chosen over WebSockets because the product only needs one-way ticket update notifications, making it simpler and cheaper at this scale.
+The App Router keeps portal pages and API handlers in one Next.js deployment. Drizzle + Neon gives type-safe Postgres access without a persistent server. SSE was chosen over WebSockets because the product only needs ticket update notifications, making it simpler and cheaper at this scale.
+
+Author and admin ticket views subscribe to `/api/sse` for new tickets, responses, status changes, and ticket metadata updates. When an event arrives, clients refetch the relevant ticket or queue data, and a lightweight polling fallback covers missed in-memory events during local development, HMR, or serverless instance changes.
 
 ## AI Integration
 `lib/groq.ts` contains two Groq functions. Classification uses a strict JSON prompt with the six allowed categories and four priority levels. Drafting injects the BookLeaf knowledge base plus only the relevant book and last three responses to control token use. Groq failures return `null`; ticket creation never depends on AI availability.
@@ -56,11 +58,11 @@ The App Router keeps portal pages and API handlers in one Next.js deployment. Dr
 - `POST /api/tickets/:id/respond`: authenticated; body `{ content, isInternalNote }`. Authors cannot create internal notes.
 - `POST /api/ai/classify`: authenticated; body `{ subject, description }`; returns `{ category, priority }` or null fields.
 - `POST /api/ai/draft`: admin only; body `{ ticketId }`; returns `{ draft }`.
-- `GET /api/sse`: authenticated SSE stream for ticket events.
+- `GET /api/sse`: authenticated SSE stream for ticket events. Authors receive events for their own tickets; admins receive all ticket events.
 - `GET/POST /api/auth/[...nextauth]`: NextAuth handlers.
 
 ## Known Limitations & Future Improvements
-- SSE clients are stored in memory; use Redis pub/sub for multi-instance production.
+- SSE clients are stored in memory; use Redis pub/sub for multi-instance production. Current clients also poll periodically as a fallback.
 - Attachments are UI-only; add S3 or Vercel Blob uploads.
 - No email notifications yet; add transactional email for new responses.
 - Add rate limiting to AI endpoints and ticket creation.

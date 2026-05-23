@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ChevronDown, Loader2 } from "lucide-react";
 import { Badge, priorityTone, statusTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -21,14 +21,23 @@ type TicketCardProps = {
     responses: { id: string; author: string; content: string; createdAt: Date }[];
   };
   defaultOpen?: boolean;
+  forceOpen?: boolean;
+  highlight?: boolean;
   onReplySent?: () => Promise<void> | void;
 };
 
-export function TicketCard({ ticket, defaultOpen = false, onReplySent }: TicketCardProps) {
+export function TicketCard({ ticket, defaultOpen = false, forceOpen = false, highlight = false, onReplySent }: TicketCardProps) {
+  const [open, setOpen] = useState(defaultOpen || forceOpen);
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const isClosed = ticket.status === "closed";
+
+  useEffect(() => {
+    if (forceOpen) {
+      setOpen(true);
+    }
+  }, [forceOpen]);
 
   async function submitReply(event: FormEvent) {
     event.preventDefault();
@@ -37,29 +46,36 @@ export function TicketCard({ ticket, defaultOpen = false, onReplySent }: TicketC
 
     setSending(true);
     setError("");
-    const response = await fetch(`/api/tickets/${ticket.id}/respond`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content, isInternalNote: false }),
-    });
-    setSending(false);
+    try {
+      const response = await fetch(`/api/tickets/${ticket.id}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, isInternalNote: false }),
+      });
 
-    if (!response.ok) {
-      const data = (await response.json().catch(() => null)) as { error?: string } | null;
-      setError(data?.error ?? "Unable to send reply");
-      return;
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        setError(data?.error ?? "Unable to send reply");
+        return;
+      }
+
+      setReply("");
+      await onReplySent?.();
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSending(false);
     }
-
-    setReply("");
-    await onReplySent?.();
   }
 
   return (
     <Card
-      className="group p-0 transition hover:border-amber-300 hover:shadow-md hover:shadow-amber-500/10 dark:hover:border-amber-500/60"
+      className={`group p-0 transition hover:border-amber-300 hover:shadow-md hover:shadow-amber-500/10 dark:hover:border-amber-500/60 ${
+        highlight ? "border-amber-400 shadow-md shadow-amber-500/15 dark:border-amber-500/70" : ""
+      }`}
       id={`ticket-${ticket.id}`}
     >
-      <details open={defaultOpen} className="group/details">
+      <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)} className="group/details">
         <summary className="grid cursor-pointer list-none gap-3 rounded-lg p-5 transition hover:bg-slate-50 dark:hover:bg-slate-800/60 sm:grid-cols-[1fr_auto]">
           <div className="min-w-0">
             <h2 className="font-serif text-lg font-bold text-slate-950 dark:text-slate-100">{ticket.subject}</h2>

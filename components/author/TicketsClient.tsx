@@ -1,37 +1,75 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { TicketCard } from "@/components/author/TicketCard";
 
 type Ticket = React.ComponentProps<typeof TicketCard>["ticket"];
+type TicketEvent = {
+  type: "connected" | "heartbeat" | "new_ticket" | "new_response" | "status_changed" | "ticket_updated";
+  ticketId?: string;
+};
 
 export function TicketsClient({ initialTickets }: { initialTickets: Ticket[] }) {
   const [tickets, setTickets] = useState(initialTickets);
+  const [updatedTicketId, setUpdatedTicketId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const selectedTicketId = searchParams.get("ticket");
   const created = searchParams.get("created") === "1";
 
-  async function refreshTickets() {
-    const data = (await fetch("/api/tickets", { cache: "no-store" }).then((res) => res.json())) as { tickets: Ticket[] };
-    setTickets(data.tickets);
-  }
-
-  useEffect(() => {
-    const source = new EventSource("/api/sse");
-    source.onmessage = () => void refreshTickets();
-    return () => source.close();
+  const refreshTickets = useCallback(async (ticketId?: string) => {
+    try {
+      const response = await fetch("/api/tickets", { cache: "no-store" });
+      if (!response.ok) return;
+      const data = (await response.json()) as { tickets: Ticket[] };
+      setTickets(data.tickets);
+      if (ticketId) {
+        setUpdatedTicketId(ticketId);
+      }
+    } catch {
+      return;
+    }
   }, []);
 
   useEffect(() => {
-    if (!selectedTicketId) return;
-    document.getElementById(`ticket-${selectedTicketId}`)?.scrollIntoView({
+    const source = new EventSource("/api/sse");
+    source.onmessage = (event) => {
+      let payload: TicketEvent;
+      try {
+        payload = JSON.parse(event.data) as TicketEvent;
+      } catch {
+        return;
+      }
+      if (payload.type === "heartbeat" || payload.type === "connected") {
+        return;
+      }
+      void refreshTickets(payload.ticketId);
+    };
+
+    // Fallback for dev HMR/serverless route isolation where in-memory SSE clients can be missed.
+    const fallback = setInterval(() => void refreshTickets(), 10000);
+    return () => {
+      source.close();
+      clearInterval(fallback);
+    };
+  }, [refreshTickets]);
+
+  useEffect(() => {
+    const ticketId = updatedTicketId ?? selectedTicketId;
+    if (!ticketId) return;
+    document.getElementById(`ticket-${ticketId}`)?.scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
-  }, [selectedTicketId]);
+  }, [selectedTicketId, updatedTicketId]);
+
+  useEffect(() => {
+    if (!updatedTicketId) return;
+    const timeout = setTimeout(() => setUpdatedTicketId(null), 6000);
+    return () => clearTimeout(timeout);
+  }, [updatedTicketId]);
 
   if (!tickets.length) {
     return (
@@ -53,7 +91,14 @@ export function TicketsClient({ initialTickets }: { initialTickets: Ticket[] }) 
         </div>
       ) : null}
       {tickets.map((ticket) => (
-        <TicketCard key={ticket.id} ticket={ticket} defaultOpen={ticket.id === selectedTicketId} onReplySent={refreshTickets} />
+        <TicketCard
+          key={ticket.id}
+          ticket={ticket}
+          defaultOpen={ticket.id === selectedTicketId}
+          forceOpen={ticket.id === updatedTicketId}
+          highlight={ticket.id === updatedTicketId}
+          onReplySent={refreshTickets}
+        />
       ))}
     </div>
   );

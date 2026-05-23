@@ -7,10 +7,123 @@
   - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 4.1s
+ ✓ Ready in 2.3s
  ○ Compiling /api/sse ...
- ✓ Compiled /api/sse in 2.2s (288 modules)
- ✓ Compiled /api/tickets in 362ms (331 modules)
- GET /api/tickets 200 in 1155ms
- ✓ Compiled /middleware in 401ms (199 modules)
- ○ Compiling /login ...
+ ✓ Compiled /api/sse in 3.6s (288 modules)
+ ○ Compiling /api/tickets ...
+ ✓ Compiled /api/tickets in 742ms (331 modules)
+ GET /api/tickets 200 in 2067ms
+ GET /api/tickets 200 in 348ms
+ GET /api/tickets 200 in 201ms
+ GET /api/tickets 200 in 340ms
+ GET /api/tickets 200 in 306ms
+ ○ Compiling / ...
+ ✓ Compiled /middleware in 5.2s (984 modules)
+ GET / 200 in 5655ms
+ GET /api/tickets 200 in 2951ms
+ ○ Compiling /tickets ...
+ ✓ Compiled /tickets in 1337ms (917 modules)
+ GET /tickets?ticket=ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 1659ms
+ GET /api/sse 200 in 62106ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 789ms (648 modules)
+ ✓ Compiled in 249ms (285 modules)
+ GET /favicon.ico 200 in 1601ms
+ GET /dashboard 200 in 1658ms
+ GET /dashboard 200 in 496ms
+ ○ Compiling /admin/tickets/[id] ...
+ ✓ Compiled /admin/tickets/[id] in 628ms (977 modules)
+ GET /admin/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 1538ms
+ GET /favicon.ico 200 in 123ms
+ ○ Compiling /api/sse ...
+ ✓ Compiled /api/sse in 529ms (683 modules)
+ GET / 200 in 56ms
+ GET /api/sse 200 in 8752ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 1025ms (1063 modules)
+ GET /admin 200 in 364ms
+ GET /api/sse 200 in 1963ms
+ GET /admin/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d?_rsc=1eqq1 200 in 148ms
+ GET /tickets?ticket=ee8ce737-ea2f-44a8-834f-4377fd5c2f3d&_rsc=1tqxj 200 in 366ms
+ ✓ Compiled /api/tickets/[id] in 299ms (731 modules)
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 1119ms
+ ✓ Compiled /api/tickets/[id]/respond in 327ms (733 modules)
+ GET /api/tickets 200 in 427ms
+ POST /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d/respond 201 in 1333ms
+ GET /api/tickets 200 in 204ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 108ms
+ GET /api/tickets 200 in 390ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 129ms
+ POST /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d/respond 201 in 438ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 101ms
+ GET /api/tickets 200 in 343ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 105ms
+ GET /api/tickets 200 in 359ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 139ms
+ GET /api/tickets 200 in 337ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 172ms
+ GET /api/tickets 200 in 396ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 126ms
+ GET /api/tickets 200 in 363ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 120ms
+ GET /api/tickets 200 in 431ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 161ms
+ GET /api/tickets 200 in 330ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 118ms
+ GET /api/tickets 200 in 333ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 125ms
+ GET /api/tickets 200 in 371ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 109ms
+ GET /api/tickets 200 in 331ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 109ms
+ GET /api/tickets 200 in 331ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 109ms
+ GET /api/tickets 200 in 329ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 112ms
+ GET /api/tickets 200 in 382ms
+ ✓ Compiled /api/ai/draft in 493ms (654 modules)
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 127ms
+ POST /api/ai/draft 200 in 2137ms
+ ✓ Compiled /api/tickets/[id]/respond in 218ms (656 modules)
+ POST /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d/respond 201 in 860ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 102ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 111ms
+ GET /api/tickets 200 in 179ms
+ GET /api/tickets 200 in 337ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 198ms
+ POST /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d/respond 201 in 404ms
+ GET /api/tickets 200 in 167ms
+ GET /api/tickets 200 in 176ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 137ms
+ GET /api/tickets 200 in 335ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 107ms
+ GET /api/tickets 200 in 372ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 105ms
+ GET /api/tickets 200 in 344ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 108ms
+ GET /api/tickets 200 in 334ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 102ms
+ GET /api/tickets 200 in 336ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 100ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 262ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 268ms
+ GET /api/tickets 200 in 352ms
+ ✓ Compiled in 388ms (348 modules)
+ GET /admin/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d?_rsc=ndysh 200 in 390ms
+ GET /tickets?ticket=ee8ce737-ea2f-44a8-834f-4377fd5c2f3d&_rsc=1ls42 200 in 692ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 113ms
+ GET /api/tickets 200 in 197ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 279ms
+ GET /api/tickets 200 in 627ms
+   Reload env: .env.local
+ ✓ Compiled in 681ms (1185 modules)
+   Reload env: .env.local
+ GET /admin/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d?_rsc=ndysh 200 in 1029ms
+ GET /tickets?ticket=ee8ce737-ea2f-44a8-834f-4377fd5c2f3d&_rsc=1ls42 200 in 1162ms
+ ✓ Compiled in 967ms (1185 modules)
+ GET /tickets?ticket=ee8ce737-ea2f-44a8-834f-4377fd5c2f3d&_rsc=1ls42 200 in 406ms
+ GET /admin/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d?_rsc=ndysh 200 in 166ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 148ms
+ GET /api/tickets 200 in 206ms
+ GET /api/tickets/ee8ce737-ea2f-44a8-834f-4377fd5c2f3d 200 in 133ms
+[?25h

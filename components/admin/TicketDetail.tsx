@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Bot, Loader2, MessageSquareText, UserRound } from "lucide-react";
 import { Badge, priorityTone, statusTone } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -39,6 +39,10 @@ type Detail = {
 const categories = ["", "royalty_payments", "isbn_metadata", "printing_quality", "distribution_availability", "book_status_production", "general_inquiry"];
 const priorities = ["", "critical", "high", "medium", "low"];
 const statuses = ["open", "in_progress", "resolved", "closed"];
+type TicketEvent = {
+  type: "connected" | "heartbeat" | "new_ticket" | "new_response" | "status_changed" | "ticket_updated";
+  ticketId?: string;
+};
 
 export function TicketDetail({ initialTicket, userId }: { initialTicket: Detail; userId: string }) {
   const [ticket, setTicket] = useState(initialTicket);
@@ -51,49 +55,109 @@ export function TicketDetail({ initialTicket, userId }: { initialTicket: Detail;
   const [message, setMessage] = useState("");
   const isClosed = ticket.status === "closed";
 
-  async function refresh() {
-    const data = (await fetch(`/api/tickets/${ticket.id}`, { cache: "no-store" }).then((res) => res.json())) as { ticket: Detail };
-    setTicket(data.ticket);
-  }
+  const refresh = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/tickets/${ticket.id}`, { cache: "no-store" });
+      if (!response.ok) return;
+      const data = (await response.json()) as { ticket: Detail };
+      setTicket(data.ticket);
+    } catch {
+      return;
+    }
+  }, [ticket.id]);
+
+  useEffect(() => {
+    const source = new EventSource("/api/sse");
+    source.onmessage = (event) => {
+      let payload: TicketEvent;
+      try {
+        payload = JSON.parse(event.data) as TicketEvent;
+      } catch {
+        return;
+      }
+      if (payload.type === "heartbeat" || payload.type === "connected") {
+        return;
+      }
+      if (!payload.ticketId || payload.ticketId === ticket.id) {
+        void refresh();
+      }
+    };
+
+    const fallback = setInterval(() => void refresh(), 10000);
+    return () => {
+      source.close();
+      clearInterval(fallback);
+    };
+  }, [refresh, ticket.id]);
 
   async function update(field: "status" | "category" | "priority" | "assignedTo", value: string | null) {
     setUpdatingField(field);
     const path = field === "status" ? `/api/tickets/${ticket.id}/status` : `/api/tickets/${ticket.id}`;
-    await fetch(path, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [field]: value }),
-    });
-    await refresh();
-    setUpdatingField(null);
+    try {
+      const response = await fetch(path, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value }),
+      });
+      if (response.ok) {
+        await refresh();
+      } else {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        setMessage(data?.error ?? "Unable to update ticket");
+      }
+    } catch {
+      setMessage("Network error. Please try again.");
+    } finally {
+      setUpdatingField(null);
+    }
   }
 
   async function generateDraft() {
     setLoadingDraft(true);
     setMessage("");
-    const response = await fetch("/api/ai/draft", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ticketId: ticket.id }),
-    });
-    const data = (await response.json()) as { draft: string | null };
-    setDraft(data.draft ?? "");
-    setMessage(data.draft ? "" : "AI draft unavailable. Please write a response manually.");
-    setLoadingDraft(false);
+    try {
+      const response = await fetch("/api/ai/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticketId: ticket.id }),
+      });
+      if (!response.ok) {
+        setMessage("AI draft unavailable. Please write a response manually.");
+        return;
+      }
+      const data = (await response.json()) as { draft: string | null };
+      setDraft(data.draft ?? "");
+      setMessage(data.draft ? "" : "AI draft unavailable. Please write a response manually.");
+    } catch {
+      setMessage("Network error. Please try again.");
+    } finally {
+      setLoadingDraft(false);
+    }
   }
 
   async function send(content: string, isInternalNote: boolean) {
     if (!content.trim()) return;
     setSendingResponse(true);
-    await fetch(`/api/tickets/${ticket.id}/respond`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content, isInternalNote }),
-    });
-    setManual("");
-    setDraft("");
-    await refresh();
-    setSendingResponse(false);
+    setMessage("");
+    try {
+      const response = await fetch(`/api/tickets/${ticket.id}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content, isInternalNote }),
+      });
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as { error?: string } | null;
+        setMessage(data?.error ?? "Unable to send response");
+        return;
+      }
+      setManual("");
+      setDraft("");
+      await refresh();
+    } catch {
+      setMessage("Network error. Please try again.");
+    } finally {
+      setSendingResponse(false);
+    }
   }
 
   return (

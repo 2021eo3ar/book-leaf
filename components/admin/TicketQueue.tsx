@@ -19,6 +19,10 @@ type Ticket = {
   author: { name: string };
   book: { title: string } | null;
 };
+type TicketEvent = {
+  type: "connected" | "heartbeat" | "new_ticket" | "new_response" | "status_changed" | "ticket_updated";
+  ticketId?: string;
+};
 
 const categories = ["", "royalty_payments", "isbn_metadata", "printing_quality", "distribution_availability", "book_status_production", "general_inquiry"];
 const priorities = ["", "critical", "high", "medium", "low"];
@@ -49,26 +53,53 @@ export function TicketQueue({ initialTickets }: { initialTickets: Ticket[] }) {
   const [updatingTicketId, setUpdatingTicketId] = useState<string | null>(null);
 
   const refreshTickets = useCallback(async () => {
-    const data = (await fetch("/api/tickets", { cache: "no-store" }).then((res) => res.json())) as { tickets: Ticket[] };
-    setTickets(data.tickets);
+    try {
+      const response = await fetch("/api/tickets", { cache: "no-store" });
+      if (!response.ok) return;
+      const data = (await response.json()) as { tickets: Ticket[] };
+      setTickets(data.tickets);
+    } catch {
+      return;
+    }
   }, []);
 
   useEffect(() => {
     const source = new EventSource("/api/sse");
-    source.onmessage = () => void refreshTickets();
-    return () => source.close();
+    source.onmessage = (event) => {
+      let payload: TicketEvent;
+      try {
+        payload = JSON.parse(event.data) as TicketEvent;
+      } catch {
+        return;
+      }
+      if (payload.type === "heartbeat" || payload.type === "connected") {
+        return;
+      }
+      void refreshTickets();
+    };
+
+    const fallback = setInterval(() => void refreshTickets(), 10000);
+    return () => {
+      source.close();
+      clearInterval(fallback);
+    };
   }, [refreshTickets]);
 
   async function updateTicket(id: string, field: "status" | "category" | "priority", value: string) {
     setUpdatingTicketId(id);
     const path = field === "status" ? `/api/tickets/${id}/status` : `/api/tickets/${id}`;
-    await fetch(path, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [field]: value || null }),
-    });
-    await refreshTickets();
-    setUpdatingTicketId(null);
+    try {
+      const response = await fetch(path, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: value || null }),
+      });
+      if (response.ok) {
+        await refreshTickets();
+      }
+    } finally {
+      setUpdatingTicketId(null);
+    }
   }
 
   const filtered = useMemo(() => {
